@@ -103,10 +103,13 @@ export const createCodeProcessorPlugin =
         for (const key in node.properties) {
           const value = node.properties[key];
           if (key !== '_text' && value) {
-            const result = codeProcessor('properties', json, node)(value, key);
+            const result = codeProcessor('properties', json, node)(value.code, key);
 
             if (typeof result === 'string') {
-              node.properties[key] = result;
+              node.properties[key] = {
+                code: result,
+                type: 'string'
+              };
             } else {
               result();
             }
