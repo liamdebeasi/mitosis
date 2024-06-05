@@ -82,7 +82,13 @@ const blockToMarko = (json: MitosisNode, options: InternalToMarkoOptions): strin
 
   for (const key in json.properties) {
     const value = json.properties[key];
-    str += ` ${key}="${value}" `;
+    if (!value) { continue; }
+    
+    if (value.type === 'string') {
+      str += ` ${key}="${value.code}" `;
+    } else {
+      str += ` ${key}=(${processBinding(options.component, value.code)}) `;
+    }
   }
   for (const key in json.bindings) {
     const { code, arguments: cusArgs = ['event'], type } = json.bindings[key]!;
