@@ -108,9 +108,9 @@ const blockToLiquid = (json: MitosisNode, options: ToLiquidOptions = {}): string
       if (!value) { continue; }
       
       if (value.type === 'string') {
-        str += ` ${key}="${value}" `;
+        str += ` ${key}="${value.code}" `;
       } else {
-        str += ` ${key}="{{${value}}}" `;
+        str += ` ${key}="{{${value.code}}}" `;
       }
     }
 
