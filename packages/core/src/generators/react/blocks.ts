@@ -187,7 +187,10 @@ export const blockToReact = (
   str += `<${json.name} `;
 
   for (const key in json.properties) {
-    const value = (json.properties[key] || '').replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+    const property = json.properties[key];
+    if (!property) { continue }
+
+    const value = (property.code || '').replace(/"/g, '&quot;').replace(/\n/g, '\\n');
 
     if (key === 'class') {
       str = `${str.trim()} className="${value}" `;
@@ -199,9 +202,16 @@ export const blockToReact = (
       } else {
         str += ` ${BINDING_MAPPERS[key]}="${value}" `;
       }
-    } else {
-      if (isValidAttributeName(key)) {
-        str += ` ${key}="${(value as string).replace(/"/g, '&quot;')}" `;
+    } else if (isValidAttributeName(key)) {
+      if (property.type === 'string') {
+        str += ` ${key}="${(value).replace(/"/g, '&quot;')}" `;
+      } else {
+        const useBindingValue = processBinding(value, options);
+        if (useBindingValue === 'true') {
+          str += ` ${key} `;
+        } else {
+          str += ` ${key}={${useBindingValue}} `;
+        }
       }
     }
   }
@@ -250,13 +260,7 @@ export const blockToReact = (
       // React Native's ScrollView has a different prop for styles: `contentContainerStyle`
       str += ` contentContainerStyle={${useBindingValue}} `;
     } else {
-      if (isValidAttributeName(key)) {
-        if (useBindingValue === 'true') {
-          str += ` ${key} `;
-        } else {
-          str += ` ${key}={${useBindingValue}} `;
-        }
-      }
+      str += ` ${key}={${useBindingValue}} `;
     }
   }
 
