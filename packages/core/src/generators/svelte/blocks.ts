@@ -29,7 +29,13 @@ const mappers: {
     let props = '';
     for (const key in json.properties) {
       const value = json.properties[key];
-      props += ` ${key}="${value}" `;
+      if (!value) { continue; }
+      
+      if (value.type === 'string') {
+        props += ` ${key}="${value.code}" `;
+      } else {
+        props += ` ${key}={${value.code}} `;
+      }
     }
 
     let bindings = '';
@@ -51,7 +57,13 @@ const mappers: {
     let props = '';
     for (const key in json.properties) {
       const value = json.properties[key];
-      props += ` ${key}="${value}" `;
+      if (!value) { continue; }
+      
+      if (value.type === 'string') {
+        props += ` ${key}="${value.code}" `;
+      } else {
+        props += ` ${key}={${value.code}} `;
+      }
     }
 
     let bindings = '';
@@ -293,7 +305,13 @@ export const blockToSvelte: BlockToSvelte = ({ json, options, parentComponent })
 
   for (const key in json.properties) {
     const value = json.properties[key];
-    str += ` ${key}="${value}" `;
+    if (!value) { continue; }
+    
+    if (value.type === 'string') {
+      str += ` ${key}="${value.code}" `;
+    } else {
+      str += ` ${key}={${value.code}} `;
+    }
   }
 
   const stringifiedBindings = Object.entries(json.bindings)
