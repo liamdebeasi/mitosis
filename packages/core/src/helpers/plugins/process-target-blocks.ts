@@ -33,7 +33,7 @@ export const processTargetBlocks = (target: Targets): Plugin => {
         if (!matches || !property) return code;
 
         node.bindings[key] = {
-          code: '"' + property + '"',
+          code: '"' + property.code + '"',
           type: 'single',
         };
 
