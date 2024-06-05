@@ -66,7 +66,13 @@ const blockToTemplate = (json: MitosisNode, options: ToTemplateOptions = {}) => 
 
     for (const key in json.properties) {
       const value = json.properties[key];
-      str += ` ${key}="${value}" `;
+      if (!value) { continue; }
+      
+      if (value.type === 'string') {
+        str += ` ${key}="${value.code}" `;
+      } else {
+        str += ` ${key}="\${${value.code}}" `;
+      }
     }
 
     for (const key in json.bindings) {
