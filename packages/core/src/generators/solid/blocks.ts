@@ -71,9 +71,9 @@ export const blockToSolid = ({
     const newKey = transformAttributeName(key);
     
     if (value.type === 'string') {
-      str += ` ${newKey}="${value}" `;
+      str += ` ${newKey}="${value.code}" `;
     } else {
-      str += ` ${newKey}={${value}} `;
+      str += ` ${newKey}={${value.code}} `;
     }
   }
   for (const key in json.bindings) {
