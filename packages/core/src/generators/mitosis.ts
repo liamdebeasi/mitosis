@@ -67,7 +67,7 @@ export const blockToMitosis = (
   }
 
   if (json.properties._text) {
-    return json.properties._text as string;
+    return json.properties._text.code;
   }
 
   if (json.bindings._text?.code) {
@@ -79,12 +79,19 @@ export const blockToMitosis = (
   str += `<${json.name} `;
 
   for (const key in json.properties) {
-    const value = (json.properties[key] || '').replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+    const property = json.properties[key];
+    if (!property) { continue; }
+  
+    const value = (property.code || '').replace(/"/g, '&quot;').replace(/\n/g, '\\n');
 
     if (!isValidAttributeName(key)) {
       console.warn('Skipping invalid attribute name:', key);
     } else {
-      str += ` ${key}="${value}" `;
+      if (property.type === 'string') {
+        str += ` ${key}="${value}" `;
+      } else {
+        str += ` ${key}={${value}} `;
+      }
     }
   }
   for (const key in json.bindings) {
