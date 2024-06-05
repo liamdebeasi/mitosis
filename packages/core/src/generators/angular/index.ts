@@ -248,7 +248,11 @@ const handleNgOutletBindings = (node: MitosisNode) => {
       continue;
     }
     const value = node.properties[key];
-    allProps += `${key}: '${value}', `;
+    if (!value) {
+      continue;
+    }
+
+    allProps += `${key}: '${value.code}', `;
   }
 
   for (const key in node.bindings) {
@@ -380,7 +384,13 @@ export const blockToAngular = (
         continue;
       }
       const value = json.properties[key];
-      str += ` ${key}="${value}" `;
+      if (!value) { continue; }
+      
+      if (value.type === 'string') {
+        str += ` ${key}="${value.code}" `;
+      } else {
+        str += ` [${key}]="${value.code}" `;
+      }
     }
 
     const stringifiedBindings = Object.entries(json.bindings)
