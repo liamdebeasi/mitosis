@@ -166,7 +166,17 @@ const blockToAlpine = (json: MitosisNode | ForNode, options: ToAlpineOptions = {
 
   for (const key in json.properties) {
     const value = json.properties[key];
-    str += ` ${key}="${value}" `;
+    if (!value) { continue; }
+    
+    if (value.type === 'string') {
+      str += ` ${key}="${value.code}" `;
+    } else {
+      const useValue = stripStateAndPropsRefs(value.code);
+      if (isValidAlpineBinding(useValue)) {
+        const bind = options.useShorthandSyntax ? ':' : 'x-bind:';
+        str += ` ${bind}${key}="${useValue}" `.replace(':=', '=');
+      }
+    }
   }
 
   for (const key in json.bindings) {
