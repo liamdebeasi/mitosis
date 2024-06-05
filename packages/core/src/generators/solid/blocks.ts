@@ -67,8 +67,14 @@ export const blockToSolid = ({
 
   for (const key in json.properties) {
     const value = json.properties[key];
+    if (!value) { continue; }
     const newKey = transformAttributeName(key);
-    str += ` ${newKey}="${value}" `;
+    
+    if (value.type === 'string') {
+      str += ` ${newKey}="${value}" `;
+    } else {
+      str += ` ${newKey}={${value}} `;
+    }
   }
   for (const key in json.bindings) {
     const { code, arguments: cusArg = ['event'], type } = json.bindings[key]!;
