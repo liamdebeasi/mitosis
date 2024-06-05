@@ -202,13 +202,19 @@ export const jsxElementToJson = (
 
         // <Foo myProp />
         if (value === null) {
-          memo.properties[key] = 'true';
+          memo.properties[key] = {
+            code: 'true',
+            type: 'boolean',
+          };
           return memo;
         }
 
         // <Foo myProp="hello" />
         if (types.isStringLiteral(value)) {
-          memo.properties[key] = value.value;
+          memo.properties[key] = {
+            code: value.value,
+            type: 'string',
+          };
           return memo;
         }
 
@@ -216,23 +222,36 @@ export const jsxElementToJson = (
 
         const { expression } = value;
 
-        if (
-          types.isStringLiteral(expression) ||
-          types.isNumericLiteral(expression) ||
-          types.isBooleanLiteral(expression)
-        ) {
-          /**
-           * <Foo myProp={"hello"} />
-           * <Foo myProp={1} />
-           * <Foo myProp={true} />
-           */
-          memo.properties[key] = expression.value.toString();
-          // <Foo myProp={null} />
+        if (types.isStringLiteral(expression)) {
+          // <Foo myProp={"hello"} />
+          memo.properties[key] = {
+            code: expression.value,
+            type: 'string',
+          };
+        } else if (types.isNumericLiteral(expression)) {
+          // <Foo myProp={1} />
+          memo.properties[key] = {
+            code: expression.value.toString(),
+            type: 'number',
+          };
+        } else if (types.isBooleanLiteral(expression)) {
+          // <Foo myProp={true} />
+          memo.properties[key] = {
+            code: expression.value.toString(),
+            type: 'boolean',
+          };
         } else if (types.isNullLiteral(expression)) {
-          memo.properties[key] = 'null';
-          // <Foo myProp={undefined} />
+          // <Foo myProp={null} />
+          memo.properties[key] = {
+            code: 'null',
+            type: 'null',
+          };
         } else if (types.isIdentifier(expression) && expression.name === 'undefined') {
-          memo.properties[key] = 'undefined';
+          // <Foo myProp={undefined} />
+          memo.properties[key] = {
+            code: 'undefined',
+            type: 'undefined',
+          };
         } else if (types.isArrowFunctionExpression(expression)) {
           // <Foo myProp={() => {}} />
           const args = key.startsWith('on')

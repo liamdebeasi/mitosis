@@ -16,21 +16,32 @@ export type Binding = {
   arguments?: string[];
 } & BindingProperties;
 
+export type Property = {
+  code: string;
+  type: 'string' | 'number' | 'boolean' | 'null' | 'undefined';
+};
+
 export type BaseNode = {
   '@type': '@builder.io/mitosis/node';
   meta: JSONObject;
   name: string;
   scope: {};
   /**
-   * Key-value store of string values for DOM attributes.
+   * Key-value store of literal values for DOM attributes.
    * ```js
    * {
-   *   defaultValue: 'initial text',
-   *   width: '100px',
+   *   defaultValue: {
+        code: 'initial text',
+        type: 'string'
+       },
+   *   width: { 
+        code: '100',
+        type: 'number'
+      }
    * }
    * ```
    */
-  properties: { [key: string]: string | undefined };
+  properties: { [key: string]: Property | undefined };
   /**
    * Key-value store of expression values for DOM attributes. These are always represented as strings.
    *
@@ -39,7 +50,6 @@ export type BaseNode = {
    *   disabled: "state.isDisabled",
    *   defaultValue: "`${props.text} + ' initial'`",
    *   width: "props.width * 10",
-   *   height: "100",
    * }
    * ```
    */
