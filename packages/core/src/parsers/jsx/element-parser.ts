@@ -202,7 +202,7 @@ export const jsxElementToJson = (
 
         // <Foo myProp />
         if (value === null) {
-          memo.bindings[key] = createSingleBinding({ code: 'true' });
+          memo.properties[key] = 'true';
           return memo;
         }
 
@@ -216,9 +216,23 @@ export const jsxElementToJson = (
 
         const { expression } = value;
 
-        if (types.isStringLiteral(expression)) {
-          // <Foo myProp={"hello"} />
-          memo.properties[key] = expression.value;
+        if (
+          types.isStringLiteral(expression) ||
+          types.isNumericLiteral(expression) ||
+          types.isBooleanLiteral(expression)
+        ) {
+          /**
+           * <Foo myProp={"hello"} />
+           * <Foo myProp={1} />
+           * <Foo myProp={true} />
+           */
+          memo.properties[key] = expression.value.toString();
+          // <Foo myProp={null} />
+        } else if (types.isNullLiteral(expression)) {
+          memo.properties[key] = 'null';
+          // <Foo myProp={undefined} />
+        } else if (types.isIdentifier(expression) && expression.name === 'undefined') {
+          memo.properties[key] = 'undefined';
         } else if (types.isArrowFunctionExpression(expression)) {
           // <Foo myProp={() => {}} />
           const args = key.startsWith('on')
