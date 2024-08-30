@@ -1180,6 +1180,80 @@ exports[`Builder > Section 1`] = `
 "
 `;
 
+exports[`Builder > Show 1`] = `
+{
+  "data": {
+    "blocks": [
+      {
+        "@type": "@builder.io/sdk:Element",
+        "actions": {},
+        "bindings": {},
+        "children": [
+          {
+            "@type": "@builder.io/sdk:Element",
+            "bindings": {
+              "show": "state.loading",
+            },
+            "children": [
+              {
+                "@type": "@builder.io/sdk:Element",
+                "actions": {},
+                "bindings": {},
+                "children": [
+                  {
+                    "@type": "@builder.io/sdk:Element",
+                    "bindings": {},
+                    "component": {
+                      "name": "Text",
+                      "options": {
+                        "text": "Loading",
+                      },
+                    },
+                    "tagName": "span",
+                  },
+                ],
+                "code": {
+                  "actions": {},
+                  "bindings": {},
+                },
+                "properties": {},
+                "tagName": "p",
+              },
+            ],
+            "component": {
+              "name": "Core:Fragment",
+            },
+          },
+        ],
+        "code": {
+          "actions": {},
+          "bindings": {},
+        },
+        "properties": {},
+        "tagName": "div",
+      },
+    ],
+    "jsCode": "",
+    "tsCode": "",
+  },
+}
+`;
+
+exports[`Builder > Show 2`] = `
+"import { Show } from \\"@builder.io/mitosis\\";
+
+export default function MyComponent(props) {
+  return (
+    <div>
+      <Show when={state.loading}>
+        <p>Loading</p>
+      </Show>
+    </div>
+  );
+}
+"
+`;
+
 exports[`Builder > Stamped 1`] = `
 {
   "data": {

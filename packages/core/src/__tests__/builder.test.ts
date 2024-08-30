@@ -400,6 +400,28 @@ describe('Builder', () => {
     expect(component).toMatchSnapshot();
     expect(out).toMatchSnapshot();
   });
+
+  test('Show', () => {
+    const component = parseJsx(`
+      export default function MyComponent(props) {
+        return (
+          <div>
+            {state.loading ? (
+              <p>Loading</p>
+            ) : (
+              <p>Loaded</p>
+            )}
+          </div>
+        );
+      }
+`);
+    const builderJson = componentToBuilder()({ component });
+    expect(builderJson).toMatchSnapshot();
+
+    const backToMitosis = builderContentToMitosisComponent(builderJson);
+    const mitosis = componentToMitosis()({ component: backToMitosis });
+    expect(mitosis).toMatchSnapshot();
+  });
 });
 
 const bindingJson = {
