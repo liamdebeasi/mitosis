@@ -109,7 +109,7 @@ const componentMappers: {
     );
   },
   Show(node, options) {
-    return el(
+    const showEl = el(
       {
         // TODO: the reverse mapping for this
         component: {
@@ -124,6 +124,36 @@ const componentMappers: {
       },
       options,
     );
+
+    if (node.meta.else) {
+      return el(
+        {
+          component: {
+            name: 'Core:Fragment',
+          },
+          children: [
+            showEl,
+            el(
+              {
+                // TODO: the reverse mapping for this
+                component: {
+                  name: 'Core:Fragment',
+                },
+                bindings: {
+                  show: `!${node.bindings.when?.code as string}`,
+                },
+                children: [node.meta.else as MitosisNode]
+                  .filter(filterEmptyTextNodes)
+                  .map((node) => blockToBuilder(node, options)),
+              },
+              options,
+            ),
+          ],
+        },
+        options,
+      );
+    }
+    return showEl;
   },
 };
 

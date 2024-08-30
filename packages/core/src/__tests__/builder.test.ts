@@ -401,7 +401,7 @@ describe('Builder', () => {
     expect(out).toMatchSnapshot();
   });
 
-  test('Show', () => {
+  test.only('Show', () => {
     const component = parseJsx(`
       export default function MyComponent(props) {
         return (
