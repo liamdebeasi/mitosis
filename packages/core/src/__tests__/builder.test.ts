@@ -725,6 +725,102 @@ describe('Builder', () => {
       "
     `);
   });
+
+  test.only('do not render <span> inside of <option>', () => {
+    const jsx = `
+    export default function MyComponent() {
+      return (
+        <select>
+          <option value="foo">Foo</option>
+        </select>
+      );
+    }`;
+
+    const mitosis = parseJsx(jsx);
+
+    expect(mitosis.children).toMatchInlineSnapshot(`
+      [
+        {
+          "@type": "@builder.io/mitosis/node",
+          "bindings": {},
+          "children": [
+            {
+              "@type": "@builder.io/mitosis/node",
+              "bindings": {},
+              "children": [
+                {
+                  "@type": "@builder.io/mitosis/node",
+                  "bindings": {},
+                  "children": [],
+                  "meta": {},
+                  "name": "div",
+                  "properties": {
+                    "_text": "Foo",
+                  },
+                  "scope": {},
+                },
+              ],
+              "meta": {},
+              "name": "option",
+              "properties": {
+                "value": "foo",
+              },
+              "scope": {},
+            },
+          ],
+          "meta": {},
+          "name": "select",
+          "properties": {},
+          "scope": {},
+        },
+      ]
+    `);
+
+    const builder = componentToBuilder()({ component: mitosis });
+    expect(builder.data!.blocks).toMatchInlineSnapshot(`
+      [
+        {
+          "@type": "@builder.io/sdk:Element",
+          "actions": {},
+          "bindings": {},
+          "children": [
+            {
+              "@type": "@builder.io/sdk:Element",
+              "actions": {},
+              "bindings": {},
+              "children": [
+                {
+                  "@type": "@builder.io/sdk:Element",
+                  "bindings": {},
+                  "component": {
+                    "name": "Text",
+                    "options": {
+                      "text": "Foo",
+                    },
+                  },
+                  "tagName": "span",
+                },
+              ],
+              "code": {
+                "actions": {},
+                "bindings": {},
+              },
+              "properties": {
+                "value": "foo",
+              },
+              "tagName": "option",
+            },
+          ],
+          "code": {
+            "actions": {},
+            "bindings": {},
+          },
+          "properties": {},
+          "tagName": "select",
+        },
+      ]
+    `);
+  });
 });
 
 const bindingJson = {
