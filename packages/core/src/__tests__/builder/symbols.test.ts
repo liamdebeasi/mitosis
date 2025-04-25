@@ -99,4 +99,237 @@ describe('Builder Symbols', () => {
     // no data loss means the component payloads are exactly the same
     expect(backToBuilder.data!.blocks![0].component).toEqual(builderJson.data.blocks[0].component);
   });
+
+  test.only('inline symbol that renders itself does not crash', () => {
+    const mitosis = parseJsx(`
+      export default function Test(props) {
+        return (
+          <LocationTree />
+        );
+      }
+      function LocationTree(location) {
+        return (
+          <>
+            Stub
+            {location.child && <LocationTree location={location.child} />}
+          </>
+        );
+      }
+    `);
+    expect(mitosis).toMatchInlineSnapshot(`
+      {
+        "@type": "@builder.io/mitosis/component",
+        "children": [
+          {
+            "@type": "@builder.io/mitosis/node",
+            "bindings": {},
+            "children": [],
+            "meta": {},
+            "name": "LocationTree",
+            "properties": {},
+            "scope": {},
+          },
+        ],
+        "context": {
+          "get": {},
+          "set": {},
+        },
+        "exports": {
+          "LocationTree": {
+            "code": "function LocationTree(location) {
+        return <>
+                  Stub
+                  {location.child && <LocationTree location={location.child} />}
+                </>;
+      }",
+            "isFunction": true,
+            "usedInLocal": false,
+          },
+        },
+        "hooks": {
+          "onEvent": [],
+          "onMount": [],
+        },
+        "imports": [],
+        "inputs": [],
+        "meta": {},
+        "name": "Test",
+        "refs": {},
+        "state": {},
+        "subComponents": [
+          {
+            "@type": "@builder.io/mitosis/component",
+            "children": [
+              {
+                "@type": "@builder.io/mitosis/node",
+                "bindings": {},
+                "children": [
+                  {
+                    "@type": "@builder.io/mitosis/node",
+                    "bindings": {},
+                    "children": [],
+                    "meta": {},
+                    "name": "div",
+                    "properties": {
+                      "_text": "
+                  Stub
+                  ",
+                    },
+                    "scope": {},
+                  },
+                  {
+                    "@type": "@builder.io/mitosis/node",
+                    "bindings": {
+                      "when": {
+                        "bindingType": "expression",
+                        "code": "location.child",
+                        "type": "single",
+                      },
+                    },
+                    "children": [
+                      {
+                        "@type": "@builder.io/mitosis/node",
+                        "bindings": {
+                          "location": {
+                            "bindingType": "expression",
+                            "code": "location.child",
+                            "type": "single",
+                          },
+                        },
+                        "children": [],
+                        "meta": {},
+                        "name": "LocationTree",
+                        "properties": {},
+                        "scope": {},
+                      },
+                    ],
+                    "meta": {},
+                    "name": "Show",
+                    "properties": {},
+                    "scope": {},
+                  },
+                ],
+                "meta": {},
+                "name": "Fragment",
+                "properties": {},
+                "scope": {},
+              },
+            ],
+            "context": {
+              "get": {},
+              "set": {},
+            },
+            "exports": {},
+            "hooks": {
+              "onEvent": [],
+              "onMount": [],
+            },
+            "imports": [],
+            "inputs": [],
+            "meta": {},
+            "name": "LocationTree",
+            "refs": {},
+            "state": {},
+            "subComponents": [],
+          },
+        ],
+      }
+    `);
+    const builder = componentToBuilder()({ component: mitosis });
+    expect(builder).toMatchInlineSnapshot(`
+      {
+        "data": {
+          "blocks": [
+            {
+              "@type": "@builder.io/sdk:Element",
+              "actions": {},
+              "bindings": {},
+              "children": [],
+              "code": {
+                "actions": {},
+                "bindings": {},
+              },
+              "component": {
+                "name": "LocationTree",
+                "options": {
+                  "symbol": {
+                    "content": {
+                      "data": {
+                        "blocks": [
+                          {
+                            "@type": "@builder.io/sdk:Element",
+                            "actions": {},
+                            "bindings": {},
+                            "children": [
+                              {
+                                "@type": "@builder.io/sdk:Element",
+                                "bindings": {},
+                                "component": {
+                                  "name": "Text",
+                                  "options": {
+                                    "text": "
+                  Stub
+                  ",
+                                  },
+                                },
+                                "tagName": "span",
+                              },
+                              {
+                                "@type": "@builder.io/sdk:Element",
+                                "bindings": {
+                                  "show": "location.child",
+                                },
+                                "children": [
+                                  {
+                                    "@type": "@builder.io/sdk:Element",
+                                    "actions": {},
+                                    "bindings": {
+                                      "component.options.location": "location.child",
+                                    },
+                                    "children": [],
+                                    "code": {
+                                      "actions": {},
+                                      "bindings": {
+                                        "component.options.location": "location.child",
+                                      },
+                                    },
+                                    "component": {
+                                      "name": "LocationTree",
+                                      "options": {
+                                        "symbol": {
+                                          "content": [Circular],
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                                "component": {
+                                  "name": "Core:Fragment",
+                                },
+                              },
+                            ],
+                            "code": {
+                              "actions": {},
+                              "bindings": {},
+                            },
+                            "component": {
+                              "name": "Core:Fragment",
+                            },
+                          },
+                        ],
+                        "jsCode": "",
+                        "tsCode": "",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+          "jsCode": "",
+          "tsCode": "",
+        },
+      }
+    `);
+  });
 });

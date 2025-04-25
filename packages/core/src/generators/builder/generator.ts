@@ -736,11 +736,25 @@ export const componentToBuilder =
       });
     }
 
+    const hasDefined: Record<string, true> = {};
+
     traverse([result, subComponentMap]).forEach(function (el) {
       if (isBuilderElement(el)) {
-        const value = subComponentMap[el.component?.name!];
+        const name = el.component?.name!;
+        const value = subComponentMap[name];
         if (value) {
-          set(el, 'component.options.symbol.content', value);
+          if (hasDefined[name]) {
+            el.component.options = {
+              symbol: {
+                '@type': '@builder.io/core:Reference',
+                id: 'stub',
+                model: 'stub',
+              },
+            };
+          } else {
+            hasDefined[name] = true;
+            set(el, 'component.options.symbol.content', value);
+          }
         }
         if (el.bindings) {
           for (const [key, value] of Object.entries(el.bindings)) {
